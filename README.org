@@ -1,0 +1,194 @@
+* What?
+
+=libcardiacarrest= is a trivial implementation of =libpulse*= PulseAudio library API that
+unconditionally (but gracefully) fails to connect to the PulseAudio daemon and does **nothing** else.
+
+[[https://github.com/i-rinat/apulse][apulse]] and
+[[http://git.r-36.net/pressureaudio/tree/README.md][pressureaudio]] (which uses apulse internally)
+are an inspiration for this but unlike those two projects =libcardiacarrest= is not an emulation
+layer, all it does is it gracefully fails to provide the requested PulseAudio service hoping the
+application would try something else (e.g. ALSA or JACK).
+
+* Why?
+
+Many apps can be built with PulseAudio support, many people want that support, many other people
+(e.g. me) freak out at the single mention of linking against PulseAudio libraries (see below).
+
+This project provides a way to produce software artifacts that work for both camps without building
+two different versions of everything.
+
+The general framework is as follows:
+
+- You use original PulseAudio headers (bundled) but link against =libcardiacarrest= libraries at
+  link time. Unlike the original =libpulse=, =libcardiacarrest= doesn't permit static linking, so
+  it's impossible to f*ck it up. (You can skip this step if you don't build your software yourself
+  and you are not sufficiently paranoid.)
+
+- If you want to use PulseAudio daemon you then simply run your apps in an environment where your
+  dynamic loader can find the original =libpulse= and everything works as expected.
+
+- But if instead you point your dynamic loader to =apulse/pressureaudio= then playback will ignore
+  the daemon and will go over pure ALSA (but many other features will not work).
+
+- Finally, if you point your dynamic loader to =libcardiacarrest= then an app that uses =libpulse=
+  API will get "can't connect to the daemon" error and (hopefully) will simply switch to another
+  output plugin like ALSA or JACK (=mpv= does exactly this, YMMV) and not just crash.
+
+The intended use of this is
+
+- you point your dynamic loader to =libcardiacarrest= by default,
+- you override =LD_LIBRARY_PATH= with =apulse/pressureaudio= and the original libs on app-by-app
+  basis.
+
+But you can also use it backwards by running with the original libs by default and overriding with
+=libcardiacarrest= for selected apps (e.g., the browser) or whatever.
+
+* Explanation by examples
+
+So you linked your =mpv= with =libcardiacarrest=.
+
+- With original =libpulse= in =LD_LIBRARY_PATH=:
+  - You start =mpv=
+  - it tries its =pulse= output plugin, that loads original =libpulse=
+  - =libpulse= tries the daemon, starts it if it isn't up already
+  - =libpulse= connects to it, sets everything up
+  - =mpv= pushes decoded waves to =libpulse=
+  - =libpulse= pushes them to the daemon
+  - the daemon pushes them to ALSA
+  - ALSA pushes them to the kernel
+  - sound starts playing
+
+- With =apulse libpulse= in =LD_LIBRARY_PATH=:
+  - You start =mpv=
+  - it tries its =pulse= output plugin, that loads =apulse libpulse=
+  - =apulse= starts emulating the =libpulse= API over ALSA
+  - =mpv= pushes decoded waves to =apulse=
+  - =apulse= pushes them to ALSA
+  - ALSA pushes them to the kernel
+  - sound starts playing
+
+- With =libcardiacarrest libpulse= in =LD_LIBRARY_PATH=:
+  - You start =mpv=
+  - it tries its =pulse= output plugin, that loads =libcardiacarrest libpulse=
+  - =libcardiacarrest= pretends it tries the daemon, fails
+  - =mpv= is like "hm, PulseAudio daemon is not available, let's try something else"
+  - =mpv= tries another output plugin, say =alsa=
+  - it sets itself up
+  - =mpv= pushes decoded waves to ALSA
+  - ALSA pushes them to the kernel
+  - sound starts playing
+
+The point is that =libcardiacarrest= is not an emulation layer, it just gracefully fails to provide
+the requested service.
+
+* Why not just link against the original PulseAudio libs and run no daemon then?
+
+I don't want a single executable bit of PulseAudio on my machine.
+
+- PulseAudio is very anti-UNIX and anti-KISS (the opposite of "small, sharp tools" and "tools, not
+  restrictions").
+- The code is enormous (ENORMOUS), over-engineered and of overall pretty shitty quality. It's
+  impossible to tell how many zero-days it contains.
+- I have yet to meet a single person who still wanted to run PulseAudio on their machine after
+  reading PA sources. All people I've shown the sources to were either laughing, crying or both at
+  the end of the session. Yes, that includes the library (see [[file:src/pulse.c][src/pulse.c]] for
+  some notes on the subject).
+- I don't like the ethics of pushing over-engineered software onto under-informed users who are
+  unable to resist the tyranny of free cycles (binary packages).
+- Hence, I consider any software that is deliberately PulseAudio-only to be unethical (if not
+  malicious). There are equivalent libraries with similarly convenient APIs (e.g. =openal=, =libao=)
+  that are similarly (actually, more) cross-platform that (transparently) provide a choice over
+  audio backends. Shoving PulseAudio down everyone's throats is not a service to users.
+
+#+ATTR_HTML: :title It's a conspiracy!
+[[http://i.imgur.com/K6dAvXn.jpg]]
+
+* Well, okay, any technical arguments against it?
+
+- See comments in [[file:src/pulse.c][src/pulse.c]].
+- Xorg is a daemon, Wayland is a library. Yay, Wayland! PulseAudio is a daemon, ALSA is a library.
+  Yay, PulseAudio? PulseAudio is exactly X11 for audio. The library-to-daemon protocol is similarly
+  complicated, protocol parsing code is written by hand (not autogenerated, like for =xcb=), when
+  exposing PulseAudio to the network all of that code gets exposed to the network, to hide that
+  shitty code from the scary net they introduce yet another complicated authentication protocol on
+  top of it, exactly like X11.
+
+  Imagine exposing init system's administrative interface (e.g. systemd's =systemctl= call) to an
+  untrusted network. Sounds crazy, right? PulseAudio does pretty much this. PulseAudio is an audio
+  daemon, but it's also a plugin system, small init system (for its plugins) and authentication
+  system at the same time. The =libpulse= library also includes its own alternatives to iconv, glib
+  and a bunch of slightly-different functions from libc. This is pure crazyness (very typical of
+  Lennart Poettering creations, you might have heard of =systemd=, =dbus= and =avahi=, all of that
+  is him). Pushing uninformed people into running PulseAudio connected to untrusted data sources is
+  unethical.
+
+  Yep, I'm looking at you, Firefox developers, all your sandboxing means exactly nothing if the
+  attacker gets to the PA socket.
+- PulseAudio clients can gather all kinds of information about your hardware setup and other
+  connected clients (see =pa_context= API and =pulse/introspect.h= in PA headers).
+- PulseAudio clients can helpfully start/restart the daemon for you.
+- PulseAudio clients can reconfigure the daemon on the fly.
+- PulseAudio clients can dynamically load and unload modules into the daemon. And PulseAudio ships
+  with a bunch of crazy modules by default.
+
+Even if all the code paths in the original =libpulse= with no daemon available would have lead
+straight to errors (which is not the case, it does a lot of shit even without a daemon and tries to
+spawn a daemon at every corner) I would still prefer to link against =libcardiacarrest= in case I
+f*ck something up in my config.
+
+Just read the sources (and then you, too, would try to stay away from it forever).
+
+* But an app I want doesn't run without PulseAudio!
+
+Use [[https://github.com/i-rinat/apulse][apulse]] and/or
+[[http://git.r-36.net/pressureaudio/tree/README.md][pressureaudio]].
+
+* But I need an audio daemon!
+
+Like with X11, most likely, you do not. ALSA does software mixing by default for a decade now (but a
+lot of documentation on the net is outdated). Primary sound cards, bluetooth headsets,
+per-application soft volume, +loopback (aka "desktop sound") capture+ (comes out-of-the-box with
+ALSA 1.1.6) and quasi-dynamic output switching can be configured with a couple of lines of
+=asound.conf=.
+
+However, like with X11, sometimes you do need a daemon, and if you need an audio daemon you should
+use [[http://www.sndio.org/][sndio]] or [[http://www.jackaudio.org/][JACK]] (I prefer =v1= as it
+doesn't require =dbus=). Their library-to-daemon protocols are much simpler (sndio's is simply
+trivial), library API is much cleaner (sndio's one fits on a single page), they don't lag, they
+introduce no latency, and they also do MIDI, not just PCM. Unfortunately, neither of them is a
+default choice in Ubuntu, so relatively few apps target them (but almost all pro-audio apps have
+=JACK= support).
+
+For uncooperative apps you can use =apulse= to go =PA->ALSA= and then =alsa-plugins= to go
+=ALSA->JACK=. Works for me, YMMV.
+
+If you have to run PulseAudio at least don't simply attach it to untrusted data sources. Including
+the browser. I recommend you to run Firefox with =apulse/pressureaudio= to make it play over pure
+ALSA and then use =pulse= module of =alsa-plugins= to go from ALSA back to PA. Yes, I really do
+recommend doing =apulse->ALSA->PA->ALSA= instead of the normal =libpulse->PA->ALSA=. This way
+Firefox gets no direct access to PulseAudio daemon.
+
+* Implementation details
+
+=libcardiacarrest= only implements PA =mainloop= and =context= creation, everything else either
+pretends to do something but does absolutely nothing, returns errors, or simply aborts the whole
+process (when it's unclear how to do something saner without writing a lot of code).
+
+=libcardiacarrest= wants to be the minimal amount of code required to make all the (sane) apps think
+that =libpulse= works, but the daemon is not available. Insane uses of the API like modifying lots
+of PA-structures before ever trying to connect to the daemon will cause the process to abort, it's
+by design, fix your app (or report my misunderstanding of your sanity).
+
+In total, =libcardiacarrest= logic is implemented in ~100 LOC of fairly trivial code, everything
+else is just PA cruft (yep, it's a lot).
+
+The only dependencies are =libc= and =glib=.
+
+* License
+
+LGPLv2.1+ (same as bundled PulseAudio headers). See [[file:COPYING]].
+
+* Contributions
+
+Accepted both via GitHub issues and PRs, and via email (including patches formatted with
+=git-format-patch=).

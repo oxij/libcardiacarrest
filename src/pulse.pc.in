@@ -1,0 +1,9 @@
+prefix=@PREFIX@
+libdir=@PREFIX@/lib
+includedir=@PREFIX@/include
+
+Name: libpulse
+Description: PulseAudio Client Interface
+Version: 11.0-rebootstrapped
+Libs: -L@PREFIX@/lib -lpulse 
+Cflags: -I@PREFIX@/include -D_REENTRANT
