@@ -22,7 +22,9 @@ The general framework is as follows:
 - You use original PulseAudio headers (bundled) but link against =libcardiacarrest= libraries at
   link time. Unlike the original =libpulse=, =libcardiacarrest= doesn't permit static linking, so
   it's impossible to f*ck it up. (You can skip this step if you don't build your software yourself
-  and you are not sufficiently paranoid.)
+  and you are not sufficiently paranoid. Note, however, that I found several instances where stuff
+  was statically linked with =libpulse= while recompiling my system to use =libcardiacarrest=. You
+  have been warned.)
 
 - If you want to use PulseAudio daemon you then simply run your apps in an environment where your
   dynamic loader can find the original =libpulse= and everything works as expected.

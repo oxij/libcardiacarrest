@@ -105,14 +105,18 @@ char* pa_locale_to_utf8 (const char *str) RETURN_STRDUP
 #include <pulse/util.h>
 
 // ... and our own netdb.h
-// Everyone who uses this will die! Ha! ha! haaa...
 
-char* pa_get_user_name(char *s, size_t l) DO_ABORT
-char* pa_get_host_name(char *s, size_t l) DO_ABORT
-char* pa_get_fqdn(char *s, size_t l) DO_ABORT
-char* pa_get_home_dir(char *s, size_t l) DO_ABORT
-char* pa_get_binary_name(char *s, size_t l) DO_ABORT
-char* pa_path_get_filename(const char *p) DO_ABORT
+char* pa_get_user_name(char *s, size_t l) RETURN_NULL
+char* pa_get_host_name(char *s, size_t l) RETURN_NULL
+char* pa_get_fqdn(char *s, size_t l) RETURN_NULL
+char* pa_get_home_dir(char *s, size_t l) RETURN_NULL
+
+// openal-soft uses these two...
+char* pa_get_binary_name(char *s, size_t l) RETURN_NULL
+
+// NOTE: this call is designed for generating memory leaks
+// just look at its uses
+char* pa_path_get_filename(const char *p) RETURN_NULL
 
 int pa_msleep(unsigned long t) DO_ABORT
 
