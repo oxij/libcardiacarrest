@@ -658,6 +658,39 @@ pa_operation* pa_context_remove_sample(pa_context *c, const char *name, pa_conte
 pa_operation* pa_context_play_sample(pa_context *c, const char *name, const char *dev, pa_volume_t volume, pa_context_success_cb_t cb, void *userdata) RETURN_NOOP
 pa_operation* pa_context_play_sample_with_proplist(pa_context *c, const char *name, const char *dev, pa_volume_t volume, pa_proplist *proplist, pa_context_play_sample_cb_t cb, void *userdata) RETURN_NOOP
 
+#include <pulse/ext-device-manager.h>
+
+pa_operation *pa_ext_device_manager_test(pa_context *c, pa_ext_device_manager_test_cb_t cb, void *userdata) RETURN_NOOP
+pa_operation *pa_ext_device_manager_read(pa_context *c, pa_ext_device_manager_read_cb_t cb, void *userdata) RETURN_NOOP
+pa_operation *pa_ext_device_manager_set_device_description(pa_context *c, const char* device, const char* description, pa_context_success_cb_t cb, void *userdata) RETURN_NOOP
+pa_operation *pa_ext_device_manager_delete(pa_context *c, const char *const s[], pa_context_success_cb_t cb, void *userdata) RETURN_NOOP
+pa_operation *pa_ext_device_manager_enable_role_device_priority_routing(pa_context *c, int enable, pa_context_success_cb_t cb, void *userdata) RETURN_NOOP
+pa_operation *pa_ext_device_manager_reorder_devices_for_role(pa_context *c, const char* role, const char** devices, pa_context_success_cb_t cb, void *userdata) RETURN_NOOP
+pa_operation *pa_ext_device_manager_subscribe(pa_context *c, int enable, pa_context_success_cb_t cb, void *userdata) RETURN_NOOP
+
+void pa_ext_device_manager_set_subscribe_cb(pa_context *c, pa_ext_device_manager_subscribe_cb_t cb, void *userdata) DO_NOTHING
+
+#include <pulse/ext-device-restore.h>
+
+pa_operation *pa_ext_device_restore_test(pa_context *c, pa_ext_device_restore_test_cb_t cb, void *userdata) RETURN_NOOP
+pa_operation *pa_ext_device_restore_subscribe(pa_context *c, int enable, pa_context_success_cb_t cb, void *userdata) RETURN_NOOP
+
+void pa_ext_device_restore_set_subscribe_cb(pa_context *c, pa_ext_device_restore_subscribe_cb_t cb, void *userdata) DO_NOTHING
+
+pa_operation *pa_ext_device_restore_read_formats_all(pa_context *c, pa_ext_device_restore_read_device_formats_cb_t cb, void *userdata) RETURN_NOOP
+pa_operation *pa_ext_device_restore_read_formats(pa_context *c, pa_device_type_t type, uint32_t idx, pa_ext_device_restore_read_device_formats_cb_t cb, void *userdata) RETURN_NOOP
+pa_operation *pa_ext_device_restore_save_formats(pa_context *c, pa_device_type_t type, uint32_t idx, uint8_t n_formats, pa_format_info **formats, pa_context_success_cb_t cb, void *userdata) RETURN_NOOP
+
+#include <pulse/ext-stream-restore.h>
+
+pa_operation *pa_ext_stream_restore_test(pa_context *c, pa_ext_stream_restore_test_cb_t cb, void *userdata) RETURN_NOOP
+pa_operation *pa_ext_stream_restore_read(pa_context *c, pa_ext_stream_restore_read_cb_t cb, void *userdata) RETURN_NOOP
+pa_operation *pa_ext_stream_restore_write(pa_context *c, pa_update_mode_t mode, const pa_ext_stream_restore_info data[], unsigned n, int apply_immediately, pa_context_success_cb_t cb, void *userdata) RETURN_NOOP
+pa_operation *pa_ext_stream_restore_delete(pa_context *c, const char *const s[], pa_context_success_cb_t cb, void *userdata) RETURN_NOOP
+pa_operation *pa_ext_stream_restore_subscribe(pa_context *c, int enable, pa_context_success_cb_t cb, void *userdata) RETURN_NOOP
+
+void pa_ext_stream_restore_set_subscribe_cb(pa_context *c, pa_ext_stream_restore_subscribe_cb_t cb, void *userdata) DO_NOTHING
+
 #include <pulse/mainloop-api.h>
 
 void pa_mainloop_api_once(pa_mainloop_api *m, void (*callback)(pa_mainloop_api *m, void *userdata), void *userdata) DO_ABORT
