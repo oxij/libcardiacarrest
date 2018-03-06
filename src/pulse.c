@@ -721,15 +721,12 @@ int pa_mainloop_poll(pa_mainloop *m) RETURN_MINUSONE
 int pa_mainloop_dispatch(pa_mainloop *m) RETURN_MINUSONE
 int pa_mainloop_get_retval(pa_mainloop *m) RETURN_ZERO
 
-int pa_mainloop_iterate(pa_mainloop *m, int block, int *retval) {
-    if (retval) retval = 0;
-    return 0;
-}
-
-int pa_mainloop_run(pa_mainloop *m, int *retval) {
-    if (retval) retval = 0;
-    return 0;
-}
+// NOTE: These should never be called as `pa_context_connect` comes
+// before them and fails. But some apps fail to fail on
+// `pa_context_connect` fail and then consume 100% of CPU time by
+// calling these indefinitely. Let's abort.
+int pa_mainloop_iterate(pa_mainloop *m, int block, int *retval) DO_ABORT
+int pa_mainloop_run(pa_mainloop *m, int *retval) DO_ABORT
 
 void pa_mainloop_quit(pa_mainloop *m, int retval) DO_NOTHING
 void pa_mainloop_wakeup(pa_mainloop *m) DO_NOTHING
