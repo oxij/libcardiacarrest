@@ -462,8 +462,11 @@ int pa_context_errno(pa_context *c) {
     return CA_ERROR_NO_SERVICE;
 }
 
-pa_operation* pa_context_drain(pa_context *c, pa_context_notify_cb_t cb, void *userdata) RETURN_NOOP
+pa_operation* pa_context_drain(pa_context *c, pa_context_notify_cb_t cb, void *userdata) RETURN_NULL
+
+// Go read the description of this function and admire the design. LOL.
 pa_operation* pa_context_exit_daemon(pa_context *c, pa_context_success_cb_t cb, void *userdata) RETURN_NOOP
+
 pa_operation* pa_context_set_default_sink(pa_context *c, const char *name, pa_context_success_cb_t cb, void *userdata) RETURN_NOOP
 pa_operation* pa_context_set_default_source(pa_context *c, const char *name, pa_context_success_cb_t cb, void *userdata) RETURN_NOOP
 pa_operation* pa_context_set_name(pa_context *c, const char *name, pa_context_success_cb_t cb, void *userdata) RETURN_NOOP
