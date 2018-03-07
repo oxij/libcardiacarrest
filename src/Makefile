@@ -5,7 +5,7 @@ LIBS=glib-2.0
 CFLAGS+=$(shell pkg-config --cflags $(LIBS))
 LDFLAGS+=$(shell pkg-config --libs $(LIBS))
 
-.PHONY: libs pcs cmakes install clean all
+.PHONY: all install clean libs pcs cmakes
 all: libs pcs cmakes
 
 libs: libpulse.so libpulse-simple.so libpulse-mainloop-glib.so
@@ -35,4 +35,4 @@ install: all
 	@cp -a *.cmake $(PREFIX)/lib/cmake/PulseAudio
 
 clean:
-	rm -f *.so *.so.0
+	rm -f *.so *.so.0 *.pc *.cmake
