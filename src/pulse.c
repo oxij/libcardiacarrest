@@ -784,3 +784,40 @@ void pa_signal_done(void) DO_NOTHING
 pa_signal_event* pa_signal_new(int sig, pa_signal_cb_t callback, void *userdata) DO_ABORT
 void pa_signal_free(pa_signal_event *e) DO_NOTHING
 void pa_signal_set_destroy(pa_signal_event *e, pa_signal_destroy_cb_t callback) DO_NOTHING
+
+#include <pulse/glib-mainloop.h>
+
+struct pa_glib_mainloop {
+    pa_mainloop_api api;
+};
+
+pa_glib_mainloop* pa_glib_mainloop_new(GMainContext *c) {
+    pa_glib_mainloop* m = pa_xnew(pa_glib_mainloop, 1);
+    memset(&(m->api), 0, sizeof(pa_mainloop_api));
+    return m;
+}
+
+void pa_glib_mainloop_free(pa_glib_mainloop *m) DO_NOTHING
+
+pa_mainloop_api* pa_glib_mainloop_get_api(pa_glib_mainloop *m) {
+    return &m->api;
+}
+
+#include <pulse/simple.h>
+
+// NOTE: "Simple", LOL
+pa_simple* pa_simple_new(const char *server, const char *name, pa_stream_direction_t dir, const char *dev, const char *stream_name, const pa_sample_spec *ss, const pa_channel_map *map, const pa_buffer_attr *attr, int *error) FAIL_NULL
+
+void pa_simple_free(pa_simple *s) DO_NOTHING
+
+// NOTE: The doc says it's like read(2), blocking semantics is different from read(2)
+int pa_simple_read(pa_simple *s, void *data, size_t bytes, int *error) FAIL_NOTIMPL
+
+int pa_simple_drain(pa_simple *s, int *error) FAIL_NOTIMPL
+
+// NOTE: Same thing
+int pa_simple_write(pa_simple *s, const void *data, size_t bytes, int *error) FAIL_NOTIMPL
+
+int pa_simple_flush(pa_simple *s, int *error) FAIL_NOTIMPL
+
+pa_usec_t pa_simple_get_latency(pa_simple *s, int *error) RETURN_ZERO

@@ -10,6 +10,10 @@ all: libs pcs cmakes
 
 libs: libpulse.so libpulse-simple.so libpulse-mainloop-glib.so
 
+libpulse-simple.so libpulse-mainloop-glib.so: libpulse.so
+	@ln -s $< $@.0
+	@ln -s $< $@
+
 lib%.so: %.c
 	@$(CC) -shared -fPIC -I$(PA_HEADERS) $(CFLAGS) $(LDFLAGS) -o $@.0 $<
 	@ln -s $@.0 $@
