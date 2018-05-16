@@ -186,6 +186,19 @@ else is just PA cruft (yep, it's a lot).
 
 The only dependencies are =libc= and =glib=.
 
+* What builds with =libcardiacarrest=?
+
+Everything. APIs are identical.
+
+* What works (gracefully fails) with =libcardiacarrest=?
+
+I'm running with =libcardiacarrest= on all of my machines without any issues. Everything I ever
+tried running under this works. Xfce desktop, KDE5 desktop, firefox, chromium, mpv, mplayer, cmus,
+SDL1, SDL2, various official and unofficial pulseaudio tools, etc.
+
+Everything that failed to work with this (pamixer, cubeb) was fixed and patches were accepted
+upstream.
+
 * License
 
 LGPLv2.1+ (same as bundled PulseAudio headers). See [[file:COPYING]].
