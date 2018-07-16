@@ -33,7 +33,7 @@ PA_C_DECL_BEGIN
 /** Return the version of the header files. Keep in mind that this is
 a macro and not a function, so it is impossible to get the pointer of
 it. */
-#define pa_get_headers_version() ("11.0.0")
+#define pa_get_headers_version() ("12.1.0")
 
 /** Return the version of the library the current application is
  * linked to. */
@@ -50,10 +50,10 @@ const char* pa_get_library_version(void);
 #define PA_PROTOCOL_VERSION 32
 
 /** The major version of PA. \since 0.9.15 */
-#define PA_MAJOR 11
+#define PA_MAJOR 12
 
 /** The minor version of PA. \since 0.9.15 */
-#define PA_MINOR 0
+#define PA_MINOR 1
 
 /** The micro version of PA (will always be 0 from v1.0 onwards). \since 0.9.15 */
 #define PA_MICRO 0

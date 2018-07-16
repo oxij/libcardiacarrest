@@ -307,7 +307,7 @@ pa_cvolume* pa_sw_cvolume_divide(pa_cvolume *dest, const pa_cvolume *a, const pa
 pa_cvolume* pa_sw_cvolume_divide_scalar(pa_cvolume *dest, const pa_cvolume *a, pa_volume_t b) RETURN_DEST
 pa_cvolume* pa_cvolume_remap(pa_cvolume *dest, const pa_channel_map *from, const pa_channel_map *to) RETURN_DEST
 pa_cvolume* pa_cvolume_scale(pa_cvolume *dest, pa_volume_t max) RETURN_DEST
-pa_cvolume* pa_cvolume_scale_mask(pa_cvolume *dest, pa_volume_t max, pa_channel_map *cm, pa_channel_position_mask_t mask) RETURN_DEST
+pa_cvolume* pa_cvolume_scale_mask(pa_cvolume *dest, pa_volume_t max, const pa_channel_map *cm, pa_channel_position_mask_t mask) RETURN_DEST
 pa_cvolume* pa_cvolume_merge(pa_cvolume *dest, const pa_cvolume *a, const pa_cvolume *b) RETURN_DEST
 pa_cvolume* pa_cvolume_inc_clamp(pa_cvolume *dest, pa_volume_t inc, pa_volume_t limit) RETURN_DEST
 pa_cvolume* pa_cvolume_inc(pa_cvolume *dest, pa_volume_t inc) RETURN_DEST

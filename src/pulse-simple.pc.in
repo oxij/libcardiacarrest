@@ -4,6 +4,6 @@ includedir=@PREFIX@/include
 
 Name: libpulse-simple
 Description: PulseAudio Simplified Synchronous Client Interface
-Version: 11.0-rebootstrapped
+Version: 12.1-rebootstrapped
 Libs: -L@PREFIX@/lib -lpulse-simple 
 Cflags: -I@PREFIX@/include -D_REENTRANT
