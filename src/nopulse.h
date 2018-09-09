@@ -55,12 +55,12 @@
 }
 
 #define FAIL_NULL { \
-    if (error) *error = -1; *error = -1; \
+    if (error) *error = -1; \
     return NULL; \
 }
 
 #define FAIL_NOTIMPL { \
-    if (error) *error = -1; *error = -1; \
+    if (error) *error = -1; \
     return -1; \
 }
 
