@@ -1,6 +1,7 @@
 PA_HEADERS?=../3rdparty/pulseaudio-headers
-PREFIX?=/usr
+PREFIX?=/usr/local
 LIBDIR?=/lib
+#DESTDIR?= probably not needed
 
 LIBS=glib-2.0
 CFLAGS+=$(shell pkg-config --cflags $(LIBS))
@@ -22,12 +23,12 @@ lib%.so: %.c
 pcs: libpulse.pc libpulse-simple.pc libpulse-mainloop-glib.pc
 
 lib%.pc: %.pc.in
-	@sed "s%@PREFIX@%$(DESTDIR)$(PREFIX)%g" $< > $@
+	@sed "s%@PREFIX@%$(PREFIX)%g" $< > $@
 
 cmakes: PulseAudioConfig.cmake PulseAudioConfigVersion.cmake
 
 %.cmake: %.cmake.in
-	@sed "s%@PREFIX@%$(DESTDIR)$(PREFIX)%g" $< > $@
+	@sed "s%@PREFIX@%$(PREFIX)%g" $< > $@
 
 install: all
 	@mkdir -p $(DESTDIR)$(PREFIX)/include
