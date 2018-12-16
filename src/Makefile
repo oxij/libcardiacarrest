@@ -1,7 +1,7 @@
 PA_HEADERS?=../3rdparty/pulseaudio-headers
 PREFIX?=/usr/local
 LIBDIR?=/lib
-#DESTDIR?= probably not needed
+DESTDIR?= # test
 
 LIBS=glib-2.0
 CFLAGS+=$(shell pkg-config --cflags $(LIBS))
