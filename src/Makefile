@@ -1,6 +1,6 @@
 PA_HEADERS?=../3rdparty/pulseaudio-headers
 PREFIX?=/usr/local
-LIBDIR?=/lib
+LIBDIR?=lib
 DESTDIR?= # test
 
 LIBS=glib-2.0
@@ -33,12 +33,12 @@ cmakes: PulseAudioConfig.cmake PulseAudioConfigVersion.cmake
 install: all
 	@mkdir -p $(DESTDIR)$(PREFIX)/include
 	@cp -a $(PA_HEADERS)/pulse $(DESTDIR)$(PREFIX)/include
-	@mkdir -p $(DESTDIR)$(PREFIX)${LIBDIR}
-	@cp -a *.so *.so.0 $(DESTDIR)$(PREFIX)${LIBDIR}
-	@mkdir -p $(DESTDIR)$(PREFIX)${LIBDIR}/pkgconfig
-	@cp -a *.pc $(DESTDIR)$(PREFIX)${LIBDIR}/pkgconfig
-	@mkdir -p $(DESTDIR)$(PREFIX)${LIBDIR}/cmake/PulseAudio
-	@cp -a *.cmake $(DESTDIR)$(PREFIX)${LIBDIR}/cmake/PulseAudio
+	@mkdir -p $(DESTDIR)$(PREFIX)/${LIBDIR}
+	@cp -a *.so *.so.0 $(DESTDIR)$(PREFIX)/${LIBDIR}
+	@mkdir -p $(DESTDIR)$(PREFIX)/${LIBDIR}/pkgconfig
+	@cp -a *.pc $(DESTDIR)$(PREFIX)/${LIBDIR}/pkgconfig
+	@mkdir -p $(DESTDIR)$(PREFIX)/${LIBDIR}/cmake/PulseAudio
+	@cp -a *.cmake $(DESTDIR)$(PREFIX)/${LIBDIR}/cmake/PulseAudio
 
 clean:
 	rm -f *.so *.so.0 *.pc *.cmake
