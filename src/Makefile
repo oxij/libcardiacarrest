@@ -1,7 +1,11 @@
 include ../version.mk
 
 PA_HEADERS?=../3rdparty/pulseaudio-headers
+
+DESTDIR?= # for PKGBUILD and the like
 PREFIX?=/usr/local
+LIBDIR?=$(PREFIX)/lib
+INCLUDEDIR?=$(PREFIX)/include
 
 LIBS=glib-2.0
 CFLAGS+=$(shell pkg-config --cflags $(LIBS))
@@ -28,17 +32,17 @@ nopulse.h: nopulse.h.in
 	@sed "s%@CA_VERSION@%$(CA_VERSION)%g" $< > $@
 
 %: %.in
-	@sed "s%@PREFIX@%$(PREFIX)%g; s%@PA_VERSION_MAJOR@%$(PA_VERSION_MAJOR)%g; s%@PA_VERSION_MINOR@%$(PA_VERSION_MINOR)%g; s%@PA_VERSION@%$(PA_VERSION)%g" $< > $@
+	@sed "s%@PREFIX@%$(PREFIX)%g; s%@LIBDIR@%$(LIBDIR)%g; s%@INCLUDEDIR@%$(INCLUDEDIR)%g; s%@PA_VERSION_MAJOR@%$(PA_VERSION_MAJOR)%g; s%@PA_VERSION_MINOR@%$(PA_VERSION_MINOR)%g; s%@PA_VERSION@%$(PA_VERSION)%g" $< > $@
 
 install: all
-	@mkdir -p $(PREFIX)/include
-	@cp -a $(PA_HEADERS)/pulse $(PREFIX)/include
-	@mkdir -p $(PREFIX)/lib
-	@cp -a *.so *.so.0 $(PREFIX)/lib
-	@mkdir -p $(PREFIX)/lib/pkgconfig
-	@cp -a *.pc $(PREFIX)/lib/pkgconfig
-	@mkdir -p $(PREFIX)/lib/cmake/PulseAudio
-	@cp -a *.cmake $(PREFIX)/lib/cmake/PulseAudio
+	@mkdir -p $(DESTDIR)$(LIBDIR)
+	@cp -a *.so *.so.0 $(DESTDIR)$(LIBDIR)
+	@mkdir -p $(DESTDIR)$(INCLUDEDIR)
+	@cp -a $(PA_HEADERS)/pulse $(DESTDIR)$(INCLUDEDIR)
+	@mkdir -p $(DESTDIR)$(LIBDIR)/pkgconfig
+	@cp -a *.pc $(DESTDIR)$(LIBDIR)/pkgconfig
+	@mkdir -p $(DESTDIR)$(LIBDIR)/cmake/PulseAudio
+	@cp -a *.cmake $(DESTDIR)$(LIBDIR)/cmake/PulseAudio
 
 clean:
 	rm -f *.so *.so.0 *.pc *.cmake

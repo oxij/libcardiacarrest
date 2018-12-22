@@ -1,9 +1,9 @@
 prefix=@PREFIX@
-libdir=@PREFIX@/lib
-includedir=@PREFIX@/include
+libdir=@LIBDIR@
+includedir=@INCLUDEDIR@
 
 Name: libpulse-simple
 Description: PulseAudio Simplified Synchronous Client Interface
 Version: @PA_VERSION@-rebootstrapped
-Libs: -L@PREFIX@/lib -lpulse-simple 
-Cflags: -I@PREFIX@/include -D_REENTRANT
+Libs: -L@LIBDIR@ -lpulse-simple 
+Cflags: -I@INCLUDEDIR@ -D_REENTRANT

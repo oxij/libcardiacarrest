@@ -1,9 +1,9 @@
 prefix=@PREFIX@
-libdir=@PREFIX@/lib
-includedir=@PREFIX@/include
+libdir=@LIBDIR@
+includedir=@INCLUDEDIR@
 
 Name: libpulse-mainloop-glib
 Description: PulseAudio GLib 2.0 Main Loop Wrapper
 Version: @PA_VERSION@-rebootstrapped
-Libs: -L@PREFIX@/lib -lpulse-mainloop-glib 
-Cflags: -I@PREFIX@/include -D_REENTRANT
+Libs: -L@LIBDIR@ -lpulse-mainloop-glib 
+Cflags: -I@INCLUDEDIR@ -D_REENTRANT
