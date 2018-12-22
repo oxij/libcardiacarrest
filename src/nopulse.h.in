@@ -17,7 +17,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define CA_LIBRARY_VERSION "12.1.0"
+#define CA_LIBRARY_VERSION "@CA_VERSION@"
 
 #define DO_NOTHING { return; }
 

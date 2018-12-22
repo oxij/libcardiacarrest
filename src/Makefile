@@ -1,3 +1,5 @@
+include ../version.mk
+
 PA_HEADERS?=../3rdparty/pulseaudio-headers
 PREFIX?=/usr/local
 
@@ -10,23 +12,23 @@ all: libs pcs cmakes
 
 libs: libpulse.so libpulse-simple.so libpulse-mainloop-glib.so
 
+pcs: libpulse.pc libpulse-simple.pc libpulse-mainloop-glib.pc
+
+cmakes: PulseAudioConfig.cmake PulseAudioConfigVersion.cmake
+
 libpulse-simple.so libpulse-mainloop-glib.so: libpulse.so
 	@ln -s $< $@.0
 	@ln -s $< $@
 
-lib%.so: %.c
+lib%.so: %.c nopulse.h
 	@$(CC) -shared -fPIC -I$(PA_HEADERS) $(CFLAGS) $(LDFLAGS) -o $@.0 $<
 	@ln -s $@.0 $@
 
-pcs: libpulse.pc libpulse-simple.pc libpulse-mainloop-glib.pc
+nopulse.h: nopulse.h.in
+	@sed "s%@CA_VERSION@%$(CA_VERSION)%g" $< > $@
 
-lib%.pc: %.pc.in
-	@sed "s%@PREFIX@%$(PREFIX)%g" $< > $@
-
-cmakes: PulseAudioConfig.cmake PulseAudioConfigVersion.cmake
-
-%.cmake: %.cmake.in
-	@sed "s%@PREFIX@%$(PREFIX)%g" $< > $@
+%: %.in
+	@sed "s%@PREFIX@%$(PREFIX)%g; s%@PA_VERSION_MAJOR@%$(PA_VERSION_MAJOR)%g; s%@PA_VERSION_MINOR@%$(PA_VERSION_MINOR)%g; s%@PA_VERSION@%$(PA_VERSION)%g" $< > $@
 
 install: all
 	@mkdir -p $(PREFIX)/include

@@ -207,3 +207,25 @@ LGPLv2.1+ (same as bundled PulseAudio headers). See [[file:COPYING]].
 
 Accepted both via GitHub issues and PRs, and via email (including patches formatted with
 =git-format-patch=).
+
+** Contributor HOWTO/FAQ
+
+- Read the src_shell{git log}. Emulate it.
+
+- To update PulseAudio:
+
+  - Run src_shell{./3rdparty/pulseaudio-headers/update.sh /path/to/pulseaudio-source} from
+    the root of the repository.
+
+    A better way is to actually build actual =libpulse= and steal its headers.
+    Alternatively, you can also run
+    src_shell{diff -Nuar pulseaudio-r1/src/pulse pulseaudio-r2/src/pulse}
+    between two PA releases and check if any interesting =.h= were added or removed.
+
+    The =update.sh= script should be good enough most of the time, though. PulseAudio
+    doesn't add/remove new headers that often.
+  - Run src_shell{git diff ./3rdparty/pulseaudio-headers/pulse/version.h}.
+  - Update =version.mk= file accordingly.
+  - Run src_shell{git diff ./3rdparty/pulseaudio-headers/pulse}.
+  - If something except =version.h= changed, update =src= accordingly.
+  - If something non-trivial in =src= was changed, bump =CA_VERION= in =version.mk=.
